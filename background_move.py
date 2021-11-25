@@ -1,6 +1,6 @@
 # import pygame, os
-# from main import *
-# from main import TELA, WIDTH, BACKGROUND
+# from game import *
+# from game import TELA, WIDTH, BACKGROUND
 # # Background
 # bg = pygame.transform.scale(pygame.image.load(os.path.join("assets", "estrela1.png")), (WIDTH, HEIGHT))
 
