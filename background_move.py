@@ -19,10 +19,10 @@
 #     TELA.fill((0,0,0))
 
 #     #Create looping background
-#     TELA.blit(bg, (i, 1))
-#     TELA.blit(bg, (width+i, 1))
+#     BACKGROUND.blit(bg, (i, 1))
+#     bg(bg, (width+i, 1))
 #     if i == -width:
-#         TELA.blit(bg, (width+i, 1))
+#         BACKGROUND.blit(bg, (width+i, 1))
 #         i = 0
 #     i -= 1
 
