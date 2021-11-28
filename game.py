@@ -133,8 +133,9 @@ class Game():
     class Jogador(Players):
         def __init__(self, x, y, vida=100):
             super().__init__(x, y, vida)
-            self.player_img = self.YELLOW_SPACE_SHIP
-            self.player_laser = self.YELLOW_LASER
+            img_player = Game()
+            self.player_img = img_player.YELLOW_SPACE_SHIP
+            self.player_laser = img_player.YELLOW_LASER
             self.mask = pygame.mask.from_surface(self.player_img)
             self.max_life = vida
 
