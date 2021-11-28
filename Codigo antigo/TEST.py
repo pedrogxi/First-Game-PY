@@ -2,6 +2,7 @@ import pygame, sys
 from game import Mecanica
 # Setup pygame/window ---------------------------------------- #
 mainClock = pygame.time.Clock()
+
 from pygame.locals import *
 pygame.init()
 pygame.display.set_caption('game base')
