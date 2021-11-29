@@ -1,6 +1,6 @@
 import pygame
 import os
-
+from pygame.locals import *
 
 class Game():
     def __init__(self):
@@ -17,6 +17,7 @@ class Game():
         self.FPS = 30
 
         # Font
+        pygame.font.init()
         self.fonte = pygame.font.Font('assets/fonte/gameovercre1.ttf', 40)
 
         # Carregando imagem dos INIMIGOS
@@ -83,8 +84,10 @@ class Game():
 
     def drawWindow(self):
         player = self.Jogador(x=40, y=320)
-
+    
         self.tela.blit(self.BACKGROUND, (0, 0))
+
+        player.draw(self.tela) # Coloca o jogador na tela
 
         vida_label = self.fonte.render(
             f"Vidas: {self.vida}", 1, (225, 225, 225))
@@ -94,8 +97,6 @@ class Game():
         self.tela.blit(vida_label, (10, 10))
         self.tela.blit(nivel_label, (self.DISPLAY_W -
                        nivel_label.get_width() - 10, 10))
-
-        player.draw(self.tela) # Coloca o jogador na tela
 
         pygame.display.update()
 
@@ -120,15 +121,11 @@ class Game():
             for laser in self.lasers_em_tela:
                 laser.draw(tela)
 
-        def getPosision(self):
-            """
-            Retorna um dicionario com a posição do objeto em questão
-            """
-            pos = {
-                "x": self.player_img.get_width(),
-                "y": self.player_laser.get_height()
-            }
-            return pos
+        def get_width(self):
+            return self.player_img.get_width()
+
+        def get_height(self):     
+            return self.player_img.get_height()
 
     class Jogador(Players):
         def __init__(self, x, y, vida=100):
@@ -140,13 +137,12 @@ class Game():
             self.max_life = vida
 
         def healthbar(self, tela):
-            pos = super().getPosision()
+            pos_vida_vermelha = (self.x, self.y + self.player_img.get_height() + 10, self.player_img.get_width(), 10)
+            pos_vida_verde = (self.x, self.y + self.player_img.get_height() + 10, self.player_img.get_width() * (self.health/self.max_health), 10)
 
-            pygame.draw.rect(tela, (255, 0, 0),
-                             (self.x, self.y + pos["y"] + 10, pos["x"], 10))
-            pygame.draw.rect(tela, (0, 255, 0), (self.x, self.y +
-                             pos["y"] + 10, pos["x"] * (self.vida/self.max_health), 10))
+            pygame.draw.rect(tela, (255, 0, 0), pos_vida_vermelha)
+            pygame.draw.rect(tela, (0, 255, 0), pos_vida_verde)
 
         def draw(self, tela):
             super().draw(tela=tela)
-            self.healthbar(tela=tela)
+            # self.healthbar(tela=tela)
