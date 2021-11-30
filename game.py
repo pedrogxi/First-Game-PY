@@ -1,12 +1,15 @@
 import pygame
 import os
+import random
 from pygame.locals import *
 
 class Game():
+    pygame.init()
     def __init__(self):
-        # Constantes do jogo
+        # Variaveis
         self.rodando, self.jogando = True, False  # vamos utilizar para o looping
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
+        self.shoot = False
         # Tela
         self.DISPLAY_W, self.DISPLAY_H = 1200, 700
         self.tela = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
@@ -48,7 +51,7 @@ class Game():
         self.vida = 5
         self.inimigos_em_tela = []
         self.inimigo_vel = 1
-        self.laser_vel = 5
+        self.laser_vel = 6
 
     def gameLoop(self):
 
@@ -60,9 +63,32 @@ class Game():
             self.checkEvents()
             if self.start_key:
                 self.jogando = False
+                self.jogador.shoot()
+            if self.shoot:
+                self.jogador.shoot()
 
+            self.jogador.move_lasers(self.laser_vel)                            
 
             self.resetKeys()
+
+
+    def drawWindow(self):
+        self.jogador = self.Jogador(40, 320)
+        
+        self.tela.blit(self.BACKGROUND, (0, 0))
+
+        self.jogador.draw(self.tela) # Coloca o jogador na tela
+
+        vida_label = self.fonte.render(
+            f"Vidas: {self.vida}", 1, (225, 225, 225))
+        nivel_label = self.fonte.render(
+            f"Nivel: {self.nivel}", 1, (225, 225, 225))
+
+        self.tela.blit(vida_label, (10, 10))
+        self.tela.blit(nivel_label, (self.DISPLAY_W -
+                       nivel_label.get_width() - 10, 10))
+
+        pygame.display.update()
 
     def checkEvents(self):
         for event in pygame.event.get():
@@ -73,6 +99,7 @@ class Game():
 
                 if event.type == pygame.K_RETURN:
                     self.start_key = True
+                    self.shoot = True
                 if event.type == pygame.K_UP:
                     self.up_key = True
                 if event.type == pygame.K_DOWN:
@@ -81,27 +108,12 @@ class Game():
                     self.right_key = True
                 if event.type == pygame.K_LEFT:
                     self.left_key = True
-
-    def drawWindow(self):
-        player = self.Jogador(x=40, y=320)
-    
-        self.tela.blit(self.BACKGROUND, (0, 0))
-
-        player.draw(self.tela) # Coloca o jogador na tela
-
-        vida_label = self.fonte.render(
-            f"Vidas: {self.vida}", 1, (225, 225, 225))
-        nivel_label = self.fonte.render(
-            f"Nivel: {self.vida}", 1, (225, 225, 225))
-
-        self.tela.blit(vida_label, (10, 10))
-        self.tela.blit(nivel_label, (self.DISPLAY_W -
-                       nivel_label.get_width() - 10, 10))
-
-        pygame.display.update()
+                if event.type == pygame.K_SPACE:
+                    self.shoot = True
 
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
+        self.shoot = False
 
     class Players():
         def __init__(self, x, y, vida=100):
@@ -120,12 +132,45 @@ class Game():
 
             for laser in self.lasers_em_tela:
                 laser.draw(tela)
+            
+        
+        def shoot(self):
+            if self.cooldown_counter == 0:
+                laser = Game.Laser(self.x, self.y, self.player_laser)
+                self.lasers_em_tela.append(laser)
+                self.cooldown_counter = 1
+
+        def shootCooldown(self):
+            if self.cooldown_counter >= self.COOLDOWN:
+                self.cooldown_counter = 0
+            elif self.cooldown_counter > 0:
+                self.cooldown_counter += 1
+        
+        def move_lasers(self, vel):
+            self.shootCooldown()
+            for laser in self.lasers_em_tela:
+                laser.draw()
+                laser.move(vel)
+                
 
         def get_width(self):
             return self.player_img.get_width()
 
         def get_height(self):     
             return self.player_img.get_height()
+        
+    class Laser():
+        def __init__(self, x, y, img):
+            self.x = x
+            self.y = y
+            self.img = img
+            self.mask = pygame.mask.from_surface(self.img)
+        
+        def draw(self, tela):
+            tela.blit(self.img, (self.x, self.y))
+        
+        def move(self, vel):
+            self.x -= vel
 
     class Jogador(Players):
         def __init__(self, x, y, vida=100):
@@ -142,7 +187,13 @@ class Game():
 
             pygame.draw.rect(tela, (255, 0, 0), pos_vida_vermelha)
             pygame.draw.rect(tela, (0, 255, 0), pos_vida_verde)
+        
+        def move_lasers(self, vel):
+            self.shootCooldown()
+            for laser in self.lasers_em_tela:
+                laser.move(vel)
 
         def draw(self, tela):
             super().draw(tela=tela)
-            # self.healthbar(tela=tela)
+            # self.healthbar(tela=tela)                
+   

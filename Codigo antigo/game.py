@@ -252,27 +252,4 @@ def main(): #LOOP PRINCIPAL
         player.move_lasers(-laser_vel, inimigos)
 
 main()
-                   
-# class Game():
-#     def __init__(self):
-#         # Display
-#         self.DISPLAY_W, self.DISPLAY_H = 1200, 700
-#         self.TELA = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
-#         pygame.display.set_caption("First game")
-
-#         # Rodando e jogando
-#         self.rodando, self.jogando = True, False
-
-#         # Imagens dos inimigos
-#         self.INIMIGO_VERMELHO = pygame.image.load(os.path.join("assets", "pixel_ship_red_small.png"))
-#         self.INIMIGO_VERDE = pygame.image.load(os.path.join("assets", "pixel_ship_green_small.png"))
-#         self.INIMIGO_AZUL = pygame.image.load(os.path.join("assets", "pixel_ship_blue_small.png"))
-#         # Player player
-#         self.YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("assets", "player.png"))
-#         # Lasers
-#         self.RED_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_red.png"))
-#         self.YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"))
-#         self.GREEN_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_green.png"))
-#         self.BLUE_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_blue.png"))
-#         # Background
-#         self.BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background1.png")), (WIDTH, HEIGHT))
+        
