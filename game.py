@@ -48,6 +48,7 @@ class Game():
         # Status de jogo
         self.nivel = 0
         self.vida = 5
+        self.velocidade_player = 10
         self.inimigos_em_tela = []
         self.inimigo_vel = 1
         self.laser_vel = 6
@@ -60,20 +61,22 @@ class Game():
             self.drawWindow()
 
             self.checkEvents()
-            if self.start_key:
-                self.jogando = False
-            if self.shoot:
-                self.jogador.shoot()
+
             
-            # Movimentação do jogador
-            if self.up_key: # para cima
-                pass
-            if self.down_key: # para baixo
-                pass
-            if self.right_key: # para direita
-                pass
-            if self.left_key: # para esquerda
-                pass
+            # if self.start_key:
+            #     self.jogando = False
+            # if self.shoot:
+            #     self.jogador.shoot()
+            
+            # # Movimentação do jogador
+            # if self.up_key: # para cima
+            #     self.jogador.y -= self.velocidade_player
+            # if self.down_key: # para baixo
+            #     pass
+            # if self.right_key: # para direita
+            #     pass
+            # if self.left_key: # para esquerda
+            #     pass
 
             self.jogador.move_lasers(self.laser_vel, self.tela)                            
 
@@ -108,9 +111,11 @@ class Game():
                 if event.type == pygame.K_RETURN:
                     self.start_key = True
                 if event.type == pygame.K_UP:
-                    self.up_key = True
+                    self.jogador.y -= self.velocidade_player
+                    print("Tecla up")
                 if event.type == pygame.K_DOWN:
                     self.down_key = True
+                    print("tecla down")
                 if event.type == pygame.K_RIGHT:
                     self.right_key = True
                 if event.type == pygame.K_LEFT:
@@ -118,7 +123,7 @@ class Game():
                 if event.type == pygame.K_SPACE:
                     self.shoot = True
 
-
+                    
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
         self.shoot = False
