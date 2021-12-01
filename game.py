@@ -51,8 +51,9 @@ class Game():
         self.vida = 5
         self.velocidade_player = 10
         self.inimigos_em_tela = []
-        self.inimigo_vel = 1
-        self.laser_vel = 6
+        self.inimigos_por_fase = 5
+        self.inimigo_vel = 15
+        self.laser_vel = 5
 
         # Posição do jogador
         self.pos_jogador_x = 40
@@ -82,18 +83,26 @@ class Game():
                 self.pos_jogador_x += self.velocidade_player
             if self.left_key: # para esquerda
                 self.pos_jogador_x -= self.velocidade_player
+            
+            # Atirando
+            if self.shoot:
+                print("Atirando")
+                # self.jogador.shoot()
 
             # self.jogador.move_lasers(self.laser_vel, self.tela)
 
             self.resetKeys()
 
     def drawWindow(self):
+        # Objeto da nave do jogador
         self.jogador = self.Jogador(self.pos_jogador_x, self.pos_jogador_y)
 
+        # Background
         self.tela.blit(self.BACKGROUND, (0, 0))
 
         self.jogador.draw(self.tela)  # Coloca o jogador na tela
 
+        # Desenhando o overlay do jogo
         vida_label = self.fonte.render(
             f"Vidas: {self.vida}", 1, (225, 225, 225))
         nivel_label = self.fonte.render(
@@ -102,6 +111,24 @@ class Game():
         self.tela.blit(vida_label, (10, 10))
         self.tela.blit(nivel_label, (self.DISPLAY_W -
                        nivel_label.get_width() - 10, 10))
+
+        if len(self.inimigos_em_tela) == 0:
+            self.nivel += 1
+            self.inimigos_por_fase += 5
+            
+            for i in range(self.inimigos_por_fase):
+                # Nascimento aleatorio dos inimigos
+                color_enemy = random.choice(["red", "blue", "green"])
+                range_de_nascimento_x = random.randrange((self.DISPLAY_W - 100), 2400)
+                range_de_nascimento_y = random.randrange(-200, (self.DISPLAY_H - 100))
+                inimigos= Game.Inimigos(id= i, x= range_de_nascimento_x, y= range_de_nascimento_y, color= color_enemy)
+                self.inimigos_em_tela.append(inimigos)
+        
+        for inimigo in self.inimigos_em_tela[:]:
+            inimigo.move(self.inimigo_vel)
+
+        for inimigos in self.inimigos_em_tela:
+            inimigos.draw(self.tela)
 
         pygame.display.update()
 
@@ -114,16 +141,14 @@ class Game():
 
         if key[pygame.K_a]: # Esquerda 
             self.left_key = True
-            print("a")
         if key[pygame.K_d]: # Direita
             self.right_key = True
-            print("d")
         if key[pygame.K_w]: # Cima
             self.up_key = True
-            print("w")
         if key[pygame.K_s]: # Baixo
             self.down_key = True
-            print("s")
+        if key[pygame.K_SPACE]:
+            self.shoot = True
 
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
@@ -144,8 +169,8 @@ class Game():
         def draw(self, tela):
             tela.blit(self.player_img, (self.x, self.y))
 
-            # for laser in self.lasers_em_tela:
-            #     laser.draw(tela)
+            for laser in self.lasers_em_tela:
+                laser.draw(tela)
 
         # def shoot(self):
         #     if self.cooldown_counter == 0:
@@ -165,11 +190,11 @@ class Game():
         #         laser.move(vel)
         #         laser.draw(tela)
 
-        # def get_width(self):
-        #     return self.player_img.get_width()
+        def get_width(self):
+            return self.player_img.get_width()
 
-        # def get_height(self):
-        #     return self.player_img.get_height()
+        def get_height(self):
+            return self.player_img.get_height()
 
     # class Laser():
     #     def __init__(self, x, y, img):
@@ -186,7 +211,8 @@ class Game():
 
     class Jogador(Players):
         def __init__(self, x, y, vida=100):
-            super().__init__(x, y, vida)
+            self.vida = vida
+            super().__init__(x, y, self.vida)
 
             img_player = Game()
             self.player_img = img_player.YELLOW_SPACE_SHIP
@@ -194,15 +220,37 @@ class Game():
             self.mask = pygame.mask.from_surface(self.player_img)
             self.max_life = vida
 
-        def healthbar(self, tela):
+        def lifebar(self, tela):
+            vida = self.vida
+            max_life = self.max_life
             pos_vida_vermelha = (
                 self.x, self.y + self.player_img.get_height() + 10, self.player_img.get_width(), 10)
             pos_vida_verde = (self.x, self.y + self.player_img.get_height() + 10,
-                              self.player_img.get_width() * (self.health/self.max_health), 10)
+                              self.player_img.get_width() * (vida/max_life), 10)
 
             pygame.draw.rect(tela, (255, 0, 0), pos_vida_vermelha)
             pygame.draw.rect(tela, (0, 255, 0), pos_vida_verde)
 
         def draw(self, tela):
             super().draw(tela=tela)
-            # self.healthbar(tela=tela)
+            self.lifebar(tela=tela)
+
+    class Inimigos(Players):
+        def __init__(self,id , x, y, color, vida=100):
+            super().__init__(x, y, vida=vida)
+            
+            # Imagens dos inimigos
+            imgs = Game()
+            ENEMY_COLOR = {
+                "red" : (imgs.INIMIGO_VERMELHO, imgs.RED_LASER),
+                "green" : (imgs.INIMIGO_VERDE, imgs.GREEN_LASER),
+                "blue" : (imgs.INIMIGO_AZUL, imgs.BLUE_LASER) 
+            }
+
+            self.player_img, self.player_laser = ENEMY_COLOR[color]
+            self.mask = pygame.mask.from_surface(self.player_img)       
+
+        def move(self, vel):
+            self.x -= vel
+        
+            
