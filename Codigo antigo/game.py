@@ -24,7 +24,7 @@ BLUE_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_blue.png"))
 # Background
 BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background1.png")), (WIDTH, HEIGHT))
 
-class Laser(object):
+class Laser():
     def __init__(self, x, y, img):
         self.x = x
         self.y = y
@@ -150,7 +150,7 @@ def collide(obj1, obj2):
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
 
 
-def main(): #LOOP PRINCIPAL
+def main(run): #LOOP PRINCIPAL
     run = True #JOGO RODANDO
     FPS = 30
     SPEED = 7 #VELOCIDADE DO PLAYER #player_vel
@@ -208,7 +208,7 @@ def main(): #LOOP PRINCIPAL
             else:
                 continue    
 
-        if len(inimigos) ==0:
+        if len(inimigos) == 0:
             nivel += 1
             comprimento_fase += 5
             for i in range(comprimento_fase):

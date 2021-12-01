@@ -4,7 +4,6 @@ import random
 from pygame.locals import *
 
 class Game():
-    pygame.init()
     def __init__(self):
         # Variaveis
         self.rodando, self.jogando = True, False  # vamos utilizar para o looping
@@ -63,11 +62,20 @@ class Game():
             self.checkEvents()
             if self.start_key:
                 self.jogando = False
-                self.jogador.shoot()
             if self.shoot:
                 self.jogador.shoot()
+            
+            # Movimentação do jogador
+            if self.up_key: # para cima
+                pass
+            if self.down_key: # para baixo
+                pass
+            if self.right_key: # para direita
+                pass
+            if self.left_key: # para esquerda
+                pass
 
-            self.jogador.move_lasers(self.laser_vel)                            
+            self.jogador.move_lasers(self.laser_vel, self.tela)                            
 
             self.resetKeys()
 
@@ -99,7 +107,6 @@ class Game():
 
                 if event.type == pygame.K_RETURN:
                     self.start_key = True
-                    self.shoot = True
                 if event.type == pygame.K_UP:
                     self.up_key = True
                 if event.type == pygame.K_DOWN:
@@ -110,6 +117,7 @@ class Game():
                     self.left_key = True
                 if event.type == pygame.K_SPACE:
                     self.shoot = True
+
 
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
@@ -146,11 +154,11 @@ class Game():
             elif self.cooldown_counter > 0:
                 self.cooldown_counter += 1
         
-        def move_lasers(self, vel):
+        def move_lasers(self, vel, tela):
             self.shootCooldown()
             for laser in self.lasers_em_tela:
-                laser.draw()
                 laser.move(vel)
+                laser.draw(tela)
                 
 
         def get_width(self):
@@ -187,11 +195,6 @@ class Game():
 
             pygame.draw.rect(tela, (255, 0, 0), pos_vida_vermelha)
             pygame.draw.rect(tela, (0, 255, 0), pos_vida_verde)
-        
-        def move_lasers(self, vel):
-            self.shootCooldown()
-            for laser in self.lasers_em_tela:
-                laser.move(vel)
 
         def draw(self, tela):
             super().draw(tela=tela)

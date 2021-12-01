@@ -30,8 +30,7 @@ def main_menu():
         button_2 = pygame.Rect(50, 200, 200, 50)
         if button_1.collidepoint((mx, my)):
             if click:
-              # game()
-              Mecanica().main()
+              Mecanica().main(run=True)
         if button_2.collidepoint((mx, my)):
             if click:
                 options()
