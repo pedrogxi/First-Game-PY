@@ -145,6 +145,9 @@ class Inimigo(Players):
                 self.cool_down_counter = 1
 
 def collide(obj1, obj2):
+    """
+    Retorna verdadeiro ou Falso
+    """
     offset_x = obj2.x - obj1.x
     offset_y = obj2.y - obj1.y
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
