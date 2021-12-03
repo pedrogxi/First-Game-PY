@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 from pygame.locals import *
+from assets.img import imagens
 
 
 class Game():
@@ -21,30 +22,7 @@ class Game():
 
         # Font
         pygame.font.init()
-        self.fonte = pygame.font.Font('assets/fonte/gameovercre1.ttf', 40)
-
-        # Carregando imagem dos INIMIGOS
-        self.INIMIGO_VERMELHO = pygame.image.load(
-            os.path.join("assets", "pixel_ship_red_small.png"))
-        self.INIMIGO_VERDE = pygame.image.load(
-            os.path.join("assets", "pixel_ship_green_small.png"))
-        self.INIMIGO_AZUL = pygame.image.load(
-            os.path.join("assets", "pixel_ship_blue_small.png"))
-        # Carregando nave do PLAYER
-        self.YELLOW_SPACE_SHIP = pygame.image.load(
-            os.path.join("assets", "player.png"))
-        # Carregando os LASERS
-        self.RED_LASER = pygame.image.load(
-            os.path.join("assets", "pixel_laser_red.png"))
-        self.YELLOW_LASER = pygame.image.load(
-            os.path.join("assets", "pixel_laser_yellow.png"))
-        self.GREEN_LASER = pygame.image.load(
-            os.path.join("assets", "pixel_laser_green.png"))
-        self.BLUE_LASER = pygame.image.load(
-            os.path.join("assets", "pixel_laser_blue.png"))
-        # Carregando background
-        self.BACKGROUND = pygame.transform.scale(pygame.image.load(
-            os.path.join("assets", "background1.png")), (self.DISPLAY_W, self.DISPLAY_H))
+        self.fonte = pygame.font.Font('assets/font/gameovercre1.ttf', 40)
 
         # Status de jogo
         self.nivel = 0
@@ -98,7 +76,7 @@ class Game():
         self.jogador = self.Jogador(self.pos_jogador_x, self.pos_jogador_y)
 
         # Background
-        self.tela.blit(self.BACKGROUND, (0, 0))
+        self.tela.blit(imagens.BACKGROUND, (0, 0))
 
 
         # Desenhando o overlay do jogo
@@ -116,7 +94,8 @@ class Game():
             for i in range(self.inimigos_por_fase):
                 # Nascimento aleatorio dos inimigos
                 color_enemy = random.choice(["red", "blue", "green"])
-                range_de_nascimento_x = random.randrange((self.DISPLAY_W + 50 ), 2400)
+                range_de_nascimento_x = random.randrange((self.DISPLAY_W + 50 ), 3200)
+                
                 range_de_nascimento_y = random.randrange(50, (self.DISPLAY_H - 50))
                 inimigos= Game.Inimigos(id= i, x= range_de_nascimento_x, y= range_de_nascimento_y, color= color_enemy)
                 self.inimigos_em_tela.append(inimigos)
@@ -222,9 +201,8 @@ class Game():
             self.vida = vida
             super().__init__(x, y, self.vida)
 
-            img_player = Game()
-            self.player_img = img_player.YELLOW_SPACE_SHIP
-            self.player_laser = img_player.YELLOW_LASER
+            self.player_img = imagens.YELLOW_SPACE_SHIP
+            self.player_laser = imagens.YELLOW_LASER
             self.mask = pygame.mask.from_surface(self.player_img)
             self.max_life = vida
 
@@ -248,11 +226,10 @@ class Game():
             super().__init__(x, y, vida=vida)
             
             # Imagens dos inimigos
-            imgs = Game()
             ENEMY_COLOR = {
-                "red" : (imgs.INIMIGO_VERMELHO, imgs.RED_LASER),
-                "green" : (imgs.INIMIGO_VERDE, imgs.GREEN_LASER),
-                "blue" : (imgs.INIMIGO_AZUL, imgs.BLUE_LASER) 
+                "red" : (imagens.INIMIGO_VERMELHO, imagens.RED_LASER),
+                "green" : (imagens.INIMIGO_VERDE, imagens.GREEN_LASER),
+                "blue" : (imagens.INIMIGO_AZUL, imagens.BLUE_LASER) 
             }
 
             self.player_img, self.player_laser = ENEMY_COLOR[color]
