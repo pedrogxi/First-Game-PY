@@ -52,7 +52,7 @@ class Game():
         self.velocidade_player = 10
         self.inimigos_em_tela = []
         self.inimigos_por_fase = 5
-        self.inimigo_vel = 15   
+        self.inimigo_vel = 1  
         self.laser_vel = 5
 
         # Posição do jogador
@@ -87,8 +87,8 @@ class Game():
             # Atirando
             if self.shoot:
                 print("Atirando")
-                # self.jogador.shoot()
-
+                # self.jogador.shoot()]
+        
             # self.jogador.move_lasers(self.laser_vel, self.tela)
 
             self.resetKeys()
@@ -100,7 +100,6 @@ class Game():
         # Background
         self.tela.blit(self.BACKGROUND, (0, 0))
 
-        self.jogador.draw(self.tela)  # Coloca o jogador na tela
 
         # Desenhando o overlay do jogo
         vida_label = self.fonte.render(
@@ -108,27 +107,35 @@ class Game():
         nivel_label = self.fonte.render(
             f"Nivel: {self.nivel}", 1, (225, 225, 225))
 
-        self.tela.blit(vida_label, (10, 10))
-        self.tela.blit(nivel_label, (self.DISPLAY_W -
-                       nivel_label.get_width() - 10, 10))
 
         if len(self.inimigos_em_tela) == 0:
             self.nivel += 1
+            self.inimigo_vel += 1
             self.inimigos_por_fase += 5
             
             for i in range(self.inimigos_por_fase):
                 # Nascimento aleatorio dos inimigos
                 color_enemy = random.choice(["red", "blue", "green"])
-                range_de_nascimento_x = random.randrange((self.DISPLAY_W - 100), 2400)
-                range_de_nascimento_y = random.randrange(-200, (self.DISPLAY_H - 200))
+                range_de_nascimento_x = random.randrange((self.DISPLAY_W + 50 ), 2400)
+                range_de_nascimento_y = random.randrange(50, (self.DISPLAY_H - 50))
                 inimigos= Game.Inimigos(id= i, x= range_de_nascimento_x, y= range_de_nascimento_y, color= color_enemy)
                 self.inimigos_em_tela.append(inimigos)
         
         for inimigo in self.inimigos_em_tela[:]:
             inimigo.move(self.inimigo_vel)
 
+            if inimigo.x + inimigo.get_width() < 0:
+                self.vida -= 1
+                self.inimigos_em_tela.remove(inimigo)
+
         for inimigos in self.inimigos_em_tela:
             inimigos.draw(self.tela)
+        
+        self.jogador.draw(self.tela)  # Coloca o jogador na tela
+
+        self.tela.blit(vida_label, (10, 10))
+        self.tela.blit(nivel_label, (self.DISPLAY_W -
+                       nivel_label.get_width() - 10, 10))
 
         pygame.display.update()
 
@@ -153,6 +160,7 @@ class Game():
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
         self.shoot = False
+    
 
     class Players():
         def __init__(self, x, y, vida=100):
