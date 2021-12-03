@@ -1,8 +1,9 @@
 import pygame
-import os
 import random
 from pygame.locals import *
 from assets.img import imagens
+from assets.font.fonte import fonte
+from time import sleep
 
 
 class Game():
@@ -10,7 +11,7 @@ class Game():
         # Variaveis
         self.rodando, self.jogando = True, False  # vamos utilizar para o looping
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
-        self.shoot = False
+        self.shoot, self.sair = False, False
         # Tela
         self.DISPLAY_W, self.DISPLAY_H = 1200, 700
         self.tela = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
@@ -20,24 +21,21 @@ class Game():
         self.clock = pygame.time.Clock()
         self.FPS = 30
 
-        # Font
-        pygame.font.init()
-        self.fonte = pygame.font.Font('assets/font/gameovercre1.ttf', 40)
-
         # Status de jogo
         self.nivel = 0
         self.vida = 5
         self.velocidade_player = 10
         self.inimigos_em_tela = []
         self.inimigos_por_fase = 5
-        self.inimigo_vel = 3
+        self.inimigo_vel = 10
         self.laser_vel = 5
 
         # Posição do jogador
         self.pos_jogador_x = 40
         self.pos_jogador_y = 320
         # Objeto da nave do jogador
-        self.jogador = self.Jogador(self.pos_jogador_x, self.pos_jogador_y, vida=100)
+        self.jogador = self.Jogador(
+            self.pos_jogador_x, self.pos_jogador_y, vida=100)
 
     def gameLoop(self):
 
@@ -48,8 +46,6 @@ class Game():
 
             self.checkEvents()
 
-            if self.start_key:
-                self.jogando = False
             if self.shoot:
                 print("Atirando")
 
@@ -64,19 +60,18 @@ class Game():
             if self.left_key and self.pos_jogador_x - self.velocidade_player - 10 > 0:  # para esquerda
                 self.jogador.x -= self.velocidade_player
 
-
             # self.jogador.move_lasers(self.laser_vel, self.tela)
 
             self.resetKeys()
 
-    def drawWindow(self):    
+    def drawWindow(self):
         # Background
         self.tela.blit(imagens.BACKGROUND, (0, 0))
 
         # Desenhando o overlay do jogo
-        vida_label = self.fonte.render(
+        vida_label = fonte.render(
             f"Vidas: {self.vida}", 1, (225, 225, 225))
-        nivel_label = self.fonte.render(
+        nivel_label = fonte.render(
             f"Nivel: {self.nivel}", 1, (225, 225, 225))
 
         if len(self.inimigos_em_tela) == 0:
@@ -135,10 +130,12 @@ class Game():
             self.down_key = True
         if key[pygame.K_SPACE]:
             self.shoot = True
+        if key[pygame.K_ESCAPE]:
+            self.sair = True
 
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
-        self.shoot = False
+        self.shoot, self.sair = False, False
 
     def colision(self, objeto1, objeto2):
         """
@@ -151,8 +148,16 @@ class Game():
         offset_y = objeto2.y - objeto1.y
         return objeto1.mask.overlap(objeto2.mask, (offset_x, offset_y)) != None
 
-    def lose(self):
-        pass
+    # def lose(self):
+    #     """
+    #     Retorna Verdadeiro caso O plyer perca
+    #     """
+    #     if self.vida <= 0:
+    #         return True
+
+    #     if self.jogador.vida == 0:
+    #         self.vida -= 1
+    #         self.jogador.vida = 100
 
     class Players():
         def __init__(self, x, y, vida):
