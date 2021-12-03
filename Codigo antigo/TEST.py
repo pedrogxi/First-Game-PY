@@ -2,6 +2,7 @@ import pygame, sys
 from game import Mecanica
 # Setup pygame/window ---------------------------------------- #
 mainClock = pygame.time.Clock()
+
 from pygame.locals import *
 pygame.init()
 pygame.display.set_caption('game base')
@@ -29,8 +30,7 @@ def main_menu():
         button_2 = pygame.Rect(50, 200, 200, 50)
         if button_1.collidepoint((mx, my)):
             if click:
-              # game()
-              Mecanica().main()
+              Mecanica().main(run=True)
         if button_2.collidepoint((mx, my)):
             if click:
                 options()
