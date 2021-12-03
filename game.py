@@ -52,7 +52,7 @@ class Game():
         self.velocidade_player = 10
         self.inimigos_em_tela = []
         self.inimigos_por_fase = 5
-        self.inimigo_vel = 15
+        self.inimigo_vel = 15   
         self.laser_vel = 5
 
         # Posição do jogador
@@ -120,7 +120,7 @@ class Game():
                 # Nascimento aleatorio dos inimigos
                 color_enemy = random.choice(["red", "blue", "green"])
                 range_de_nascimento_x = random.randrange((self.DISPLAY_W - 100), 2400)
-                range_de_nascimento_y = random.randrange(-200, (self.DISPLAY_H - 100))
+                range_de_nascimento_y = random.randrange(-200, (self.DISPLAY_H - 200))
                 inimigos= Game.Inimigos(id= i, x= range_de_nascimento_x, y= range_de_nascimento_y, color= color_enemy)
                 self.inimigos_em_tela.append(inimigos)
         
