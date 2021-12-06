@@ -3,7 +3,6 @@ import random
 from pygame.locals import *
 from assets.img import imagens
 from assets.font.fonte import fonte
-from time import sleep
 
 
 class Game():
@@ -24,11 +23,11 @@ class Game():
         # Status de jogo
         self.nivel = 0
         self.vida = 5
-        self.velocidade_player = 10
+        self.velocidade_player = 6
         self.inimigos_em_tela = []
         self.inimigos_por_fase = 5
-        self.inimigo_vel = 10
-        self.laser_vel = 5
+        self.inimigo_vel = 1
+        self.laser_vel = 8
 
         # Posição do jogador
         self.pos_jogador_x = 40
@@ -47,20 +46,26 @@ class Game():
             self.checkEvents()
 
             if self.shoot:
+                self.jogador.shoot()
                 print("Atirando")
 
+            self.lose()
+
             # Movimentação do jogador e Colisão com as paredes
-            if self.up_key and self.pos_jogador_y - self.velocidade_player + 10 > 0:  # para cima
+            if self.up_key and self.jogador.y - self.velocidade_player + 10 > 0:  # para cima
                 self.jogador.y -= self.velocidade_player
-            if self.down_key and self.pos_jogador_y + self.velocidade_player + 80 < self.DISPLAY_H:  # para baixo
+            if self.down_key and self.jogador.y + self.velocidade_player + 80 < self.DISPLAY_H:  # para baixo
                 self.jogador.y += self.velocidade_player
 
-            if self.right_key and self.pos_jogador_x + self.velocidade_player + 100 < self.DISPLAY_W:  # para direita
+            if self.right_key and self.jogador.x + self.velocidade_player + 100 < self.DISPLAY_W:  # para direita
                 self.jogador.x += self.velocidade_player
-            if self.left_key and self.pos_jogador_x - self.velocidade_player - 10 > 0:  # para esquerda
+            if self.left_key and self.jogador.x - self.velocidade_player - 10 > 0:  # para esquerda
                 self.jogador.x -= self.velocidade_player
 
-            # self.jogador.move_lasers(self.laser_vel, self.tela)
+            self.jogador.moveLaserJogador(
+                self.laser_vel, self.inimigos_em_tela)
+            for inimigo in self.inimigos_em_tela[:]:
+                inimigo.moveLaserPlayer(self.laser_vel, self.jogador)
 
             self.resetKeys()
 
@@ -93,6 +98,13 @@ class Game():
 
         for inimigo in self.inimigos_em_tela[:]:
             inimigo.move(self.inimigo_vel)
+            # inimigo.moveLaserPlayer(self.laser_vel, self.jogador)
+
+            # Inimigo
+            if random.randrange(0, 2*60) == 1 and inimigo.x <= 1200:
+                inimigo.shoot()
+                print(f"{inimigo} atirou")
+                print(inimigo.x)
 
             if self.colision(inimigo, self.jogador):
                 self.jogador.vida -= 10
@@ -148,16 +160,16 @@ class Game():
         offset_y = objeto2.y - objeto1.y
         return objeto1.mask.overlap(objeto2.mask, (offset_x, offset_y)) != None
 
-    # def lose(self):
-    #     """
-    #     Retorna Verdadeiro caso O plyer perca
-    #     """
-    #     if self.vida <= 0:
-    #         return True
+    def lose(self):
+        """
+        Retorna Verdadeiro caso O plyer perca
+        """
+        if self.vida <= 0:
+            return True
 
-    #     if self.jogador.vida == 0:
-    #         self.vida -= 1
-    #         self.jogador.vida = 100
+        if self.jogador.vida == 0:
+            self.vida -= 1
+            self.jogador.vida = 100
 
     class Players():
         def __init__(self, x, y, vida):
@@ -177,23 +189,27 @@ class Game():
             for laser in self.lasers_em_tela:
                 laser.draw(tela)
 
-        # def shoot(self):
-        #     if self.cooldown_counter == 0:
-        #         laser = Game.Laser(self.x, self.y, self.player_laser)
-        #         self.lasers_em_tela.append(laser)
-        #         self.cooldown_counter = 1
+        def shoot(self):
+            if self.cooldown_counter == 0:
+                laser = Game.Laser(self.x, self.y, self.player_laser)
+                self.lasers_em_tela.append(laser)
+                self.cooldown_counter = 1
 
-        # def shootCooldown(self):
-        #     if self.cooldown_counter >= self.COOLDOWN:
-        #         self.cooldown_counter = 0
-        #     elif self.cooldown_counter > 0:
-        #         self.cooldown_counter += 1
+        def moveLaserPlayer(self, vel, obj):
+            self.shootCooldown()
+            for laser in self.lasers_em_tela:
+                laser.move(vel)
+                if laser.offScreen(Game().DISPLAY_W):
+                    self.lasers_em_tela.remove(laser)
+                elif laser.collide(obj):
+                    obj.vida -= 10
+                    self.lasers_em_tela.remove(laser)
 
-        # def move_lasers(self, vel, tela):
-        #     self.shootCooldown()
-        #     for laser in self.lasers_em_tela:
-        #         laser.move(vel)
-        #         laser.draw(tela)
+        def shootCooldown(self):
+            if self.cooldown_counter >= self.COOLDOWN:
+                self.cooldown_counter = 0
+            elif self.cooldown_counter > 0:
+                self.cooldown_counter += 1
 
         def get_width(self):
             return self.player_img.get_width()
@@ -201,18 +217,24 @@ class Game():
         def get_height(self):
             return self.player_img.get_height()
 
-    # class Laser():
-    #     def __init__(self, x, y, img):
-    #         self.x = x
-    #         self.y = y
-    #         self.img = img
-    #         self.mask = pygame.mask.from_surface(self.img)
+    class Laser():
+        def __init__(self, x, y, img):
+            self.x = x
+            self.y = y
+            self.img = img
+            self.mask = pygame.mask.from_surface(self.img)
 
-    #     def draw(self, tela):
-    #         tela.blit(self.img, (self.x, self.y))
+        def draw(self, tela):
+            tela.blit(self.img, (self.x, self.y))
 
-    #     def move(self, vel):
-    #         self.x -= vel
+        def move(self, vel):
+            self.x -= vel
+
+        def offScreen(self, width):
+            return not(self.x <= width and self.x >= 0)
+
+        def collide(self, obj):
+            return Game.colision(self, objeto1=self, objeto2=obj)
 
     class Jogador(Players):
         def __init__(self, x, y, vida):
@@ -235,6 +257,19 @@ class Game():
             pygame.draw.rect(tela, (255, 0, 0), pos_vida_vermelha)
             pygame.draw.rect(tela, (0, 255, 0), pos_vida_verde)
 
+        def moveLaserJogador(self, vel, objs):
+            self.shootCooldown()
+            for laser in self.lasers_em_tela:
+                laser.move(-vel)
+                if laser.offScreen(Game().DISPLAY_W):
+                    self.lasers_em_tela.remove(laser)
+                else:
+                    for inimigo in objs:
+                        if laser.collide(inimigo):
+                            objs.remove(inimigo)
+                            if laser in self.lasers_em_tela:
+                                self.lasers_em_tela.remove(laser)
+
         def draw(self, tela):
             super().draw(tela=tela)
             self.lifebar(tela=tela)
@@ -255,3 +290,9 @@ class Game():
 
         def move(self, vel):
             self.x -= vel
+
+        def shoot(self):
+            if self.cooldown_counter == 0:
+                laser = Game.Laser(self.x-20, self.y, self.player_laser)
+                self.lasers_em_tela.append(laser)
+                self.cooldown_counter = 1
