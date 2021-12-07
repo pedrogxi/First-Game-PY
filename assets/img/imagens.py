@@ -4,6 +4,7 @@ import os
 INIMIGO_VERMELHO = pygame.image.load(os.path.join("assets", "pixel_ship_red_small.png"))
 INIMIGO_VERDE = pygame.image.load(os.path.join("assets", "pixel_ship_green_small.png"))
 INIMIGO_AZUL = pygame.image.load(os.path.join("assets", "pixel_ship_blue_small.png"))
+
 # Carregando nave do PLAYER
 YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("assets", "player.png"))
 # Carregando os LASERS
