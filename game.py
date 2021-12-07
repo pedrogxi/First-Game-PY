@@ -3,6 +3,7 @@ import random
 from pygame.locals import *
 from assets.img import imagens
 from assets.font.fonte import fonte
+from menu import MainMenu
 
 
 class Game():
@@ -16,6 +17,9 @@ class Game():
         self.tela = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
         pygame.display.set_caption("Fisrt game")
 
+        # Menu
+        self.curr_menu = MainMenu(self)
+
         # Taxa de atualização da tela
         self.clock = pygame.time.Clock()
         self.FPS = 30
@@ -25,8 +29,8 @@ class Game():
         self.vida = 5
         self.velocidade_player = 6
         self.inimigos_em_tela = []
-        self.inimigos_por_fase = 5
-        self.inimigo_vel = 1
+        self.inimigos_por_fase = 4
+        self.inimigo_vel = 2
         self.laser_vel = 8
 
         # Posição do jogador
@@ -46,10 +50,7 @@ class Game():
             self.checkEvents()
 
             if self.shoot:
-                self.jogador.shoot()
-                print("Atirando")
-
-            self.lose()
+                self.jogador.shoot()    
 
             # Movimentação do jogador e Colisão com as paredes
             if self.up_key and self.jogador.y - self.velocidade_player + 10 > 0:  # para cima
@@ -66,8 +67,13 @@ class Game():
                 self.laser_vel, self.inimigos_em_tela)
             for inimigo in self.inimigos_em_tela[:]:
                 inimigo.moveLaserPlayer(self.laser_vel, self.jogador)
+            
+            if self.jogador.vida == 0:
+                self.vida -= 1
+                self.jogador.vida = 100
 
-            self.resetKeys()
+            self.resetKeys()  
+            self.lose()           
 
     def drawWindow(self):
         # Background
@@ -81,8 +87,8 @@ class Game():
 
         if len(self.inimigos_em_tela) == 0:
             self.nivel += 1
-            self.inimigo_vel += 1
-            self.inimigos_por_fase += 5
+            self.inimigo_vel += 0.5
+            self.inimigos_por_fase += 2
 
             for i in range(self.inimigos_por_fase):
                 # Nascimento aleatorio dos inimigos
@@ -98,16 +104,13 @@ class Game():
 
         for inimigo in self.inimigos_em_tela[:]:
             inimigo.move(self.inimigo_vel)
-            # inimigo.moveLaserPlayer(self.laser_vel, self.jogador)
 
             # Inimigo
             if random.randrange(0, 2*60) == 1 and inimigo.x <= 1200:
                 inimigo.shoot()
-                print(f"{inimigo} atirou")
-                print(inimigo.x)
 
             if self.colision(inimigo, self.jogador):
-                self.jogador.vida -= 10
+                self.jogador.vida -= 30
                 self.inimigos_em_tela.remove(inimigo)
 
             if inimigo.x + inimigo.get_width() < 0:
@@ -124,26 +127,50 @@ class Game():
                        nivel_label.get_width() - 10, 10))
 
         pygame.display.update()
+    
+    def drawText(self, text, size, x, y):
+        font_name = 'assets/font/gameovercre1.ttf'
+        font = pygame.font.Font(font_name, size)
+        text_surface = font.render(text, True, (255,255,255))
+        text_rect = text_surface.get_rect()
+        text_rect.center = (x, y)
+        self.tela.blit(text_surface, text_rect)
 
     def checkEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.rodando, self.jogando = False, False
+                self.curr_menu.run_display = False
+
+            if self.curr_menu.run_display:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.up_key = True
+                    if event.key == pygame.K_DOWN:
+                        self.down_key = True
+                    if event.key == pygame.K_DOWN:
+                        self.down_key = True   
+                    if event.key == pygame.K_DOWN:
+                        self.down_key = True
+                    if event.key == pygame.K_RETURN:
+                        self.start_key = True
+                    if event.key == pygame.K_ESCAPE:
+                        self.sair = True
 
         key = pygame.key.get_pressed()
-
-        if key[pygame.K_a]:  # Esquerda
-            self.left_key = True
-        if key[pygame.K_d]:  # Direita
-            self.right_key = True
-        if key[pygame.K_w]:  # Cima
-            self.up_key = True
-        if key[pygame.K_s]:  # Baixo
-            self.down_key = True
-        if key[pygame.K_SPACE]:
-            self.shoot = True
-        if key[pygame.K_ESCAPE]:
-            self.sair = True
+        if self.jogando:
+            if key[pygame.K_a]:  # Esquerda
+                self.left_key = True
+            if key[pygame.K_d]:  # Direita
+                self.right_key = True
+            if key[pygame.K_w]:  # Cima
+                self.up_key = True
+            if key[pygame.K_s]:  # Baixo
+                self.down_key = True
+            if key[pygame.K_SPACE]: # Atirando
+                self.shoot = True
+            if key[pygame.K_ESCAPE]: # Voltar
+                self.sair = True
 
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
@@ -164,12 +191,22 @@ class Game():
         """
         Retorna Verdadeiro caso O plyer perca
         """
-        if self.vida <= 0:
-            return True
+        lose_count = 5
 
-        if self.jogador.vida == 0:
-            self.vida -= 1
-            self.jogador.vida = 100
+        if self.vida <= 0:
+            while not lose_count == 0:
+                self.jogando = False
+                self.checkEvents()
+                self.clock.tick(1)
+                self.tela.fill((0,0,0))
+                lost_label = fonte.render(f"Voce perdeu! Voltando para o menu em: {lose_count}", 1, (255,255,255))
+                self.tela.blit(lost_label, (self.DISPLAY_W/2 - lost_label.get_width()/2, 350))
+                pygame.display.update()
+                
+                lose_count -= 1
+
+            self.curr_menu.run_display = True
+            self.jogando = False
 
     class Players():
         def __init__(self, x, y, vida):
