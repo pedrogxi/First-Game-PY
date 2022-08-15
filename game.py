@@ -175,7 +175,7 @@ class Game():
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
         self.shoot, self.sair = False, False
-
+    
     def colision(self, objeto1, objeto2):
         """
         Retorna Verdadeiro quando um Objeto colidir com o outro
