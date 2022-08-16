@@ -15,7 +15,7 @@ class Game():
         # Tela
         self.DISPLAY_W, self.DISPLAY_H = 1200, 700
         self.tela = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
-        pygame.display.set_caption("Fisrt game")
+        pygame.display.set_caption("Space Shoot")
 
         # Menu
         self.curr_menu = MainMenu(self)
@@ -170,7 +170,7 @@ class Game():
             if key[pygame.K_SPACE]: # Atirando
                 self.shoot = True
             if key[pygame.K_ESCAPE]: # Voltar
-                self.sair = True
+                self.jogando = False
 
     def resetKeys(self):
         self.down_key, self.up_key, self.right_key, self.left_key, self.start_key = False, False, False, False, False
