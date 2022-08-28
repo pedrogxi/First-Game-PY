@@ -14,3 +14,4 @@ GREEN_LASER = pygame.image.load(os.path.join("assets/img/pixel_laser_green.png")
 BLUE_LASER = pygame.image.load(os.path.join("assets/img/pixel_laser_blue.png"))
 # Carregando background
 BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join("assets/img/background1.png")), (1200, 700))
+STARS = pygame.transform.scale(pygame.image.load(os.path.join("assets/img/estrela2.png")), (1200, 700))

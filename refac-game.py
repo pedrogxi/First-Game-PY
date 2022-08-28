@@ -1,5 +1,7 @@
+from email.mime import image
 import pygame
 from assets.img import imagens
+
 
 class Game:
     def __init__(self) -> None:
@@ -9,38 +11,60 @@ class Game:
 
         self.FPS = 27
 
-        self.bg_x = 0
-        self.bg_x2 = 0
-
-        # instanciando um novo objeto de Clock        
+        # instanciando um novo objeto de Clock
         self.clock = pygame.time.Clock()
 
-        self.windown = pygame.display.set_mode(self.window_size)
+        self.window = pygame.display.set_mode(self.window_size)
         pygame.display.set_caption("Space Shoot")
+
+        self.bg_speed = 5
+        self.bg = Background(self.window, imagens.STARS, self.bg_speed)
+
 
     def game_loop(self):
         while self.runing:
             self.clock.tick(self.FPS)
 
-            self.draw_window()
+            self.render_window()
 
             self.check_events()
 
-    def draw_window(self):
-        
+    def render_window(self):
+        self.window.blit(imagens.BACKGROUND, (0,0))
+
+        self.bg.update()
+        self.bg.render()
 
         pygame.display.update()
-    
-    def move_backgounf(self):
-        self.bg_x = -1.4        
-        self.windown.blit(imagens.BACKGROUND, (0,0))
-        self.window.blit(imagens.STARS)
 
     def check_events(self):
         for event in pygame.event.get():
-                # se clicar no x da janela, a janela vai fechar
-                if event.type == pygame.QUIT:
-                    self.runing = False
+            # se clicar no x da janela, a janela vai fechar
+            if event.type == pygame.QUIT:
+                self.runing = False
+
+
+class Background():
+    def __init__(self, window, bgimage, move_speed: int = 1.4) -> None:
+        self.window = window
+        self.image = bgimage
+        self.rect_bg_image = self.image.get_rect()
+        self.rect_bg_image_width = self.rect_bg_image.width
+
+        self.x = self.rect_bg_image.width
+        self.y = 0
+
+        self.moving_speed = move_speed
+
+    def update(self):
+        self.x -= self.moving_speed
+
+        if self.x <= - self.rect_bg_image_width:
+            self.x = self.rect_bg_image_width
+        
+    def render(self):
+        self.window.blit(self.image, (self.x, self.y))
+
 
 game = Game()
 game.game_loop()
