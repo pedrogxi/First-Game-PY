@@ -1,8 +1,8 @@
 import pygame
 import random
 from pygame.locals import *
-from assets.img import imagens
-from assets.font.fonte import fonte
+from assets.img import _load_imagens
+from assets.font._load_font import font
 from menu import MainMenu
 
 
@@ -77,12 +77,12 @@ class Game():
 
     def drawWindow(self):
         # Background
-        self.tela.blit(imagens.BACKGROUND, (0, 0))
+        self.tela.blit(_load_imagens.BACKGROUND, (0, 0))
 
         # Desenhando o overlay do jogo
-        vida_label = fonte.render(
+        vida_label = font.render(
             f"Vidas: {self.vida}", 1, (225, 225, 225))
-        nivel_label = fonte.render(
+        nivel_label = font.render(
             f"Nivel: {self.nivel}", 1, (225, 225, 225))
 
         if len(self.inimigos_em_tela) == 0:
@@ -199,7 +199,7 @@ class Game():
                 self.checkEvents()
                 self.clock.tick(1)
                 self.tela.fill((0,0,0))
-                lost_label = fonte.render(f"Voce perdeu! Voltando para o menu em: {lose_count}", 1, (255,255,255))
+                lost_label = font.render(f"Voce perdeu! Voltando para o menu em: {lose_count}", 1, (255,255,255))
                 self.tela.blit(lost_label, (self.DISPLAY_W/2 - lost_label.get_width()/2, 350))
                 pygame.display.update()
                 
@@ -278,8 +278,8 @@ class Game():
             super().__init__(x, y, vida)
             self.vida = vida
 
-            self.player_img = imagens.YELLOW_SPACE_SHIP
-            self.player_laser = imagens.YELLOW_LASER
+            self.player_img = _load_imagens.YELLOW_SPACE_SHIP
+            self.player_laser = _load_imagens.YELLOW_LASER
             self.mask = pygame.mask.from_surface(self.player_img)
             self.max_life = vida
 
@@ -317,9 +317,9 @@ class Game():
 
             # Imagens dos inimigos
             ENEMY_COLOR = {
-                "red": (imagens.INIMIGO_VERMELHO, imagens.RED_LASER),
-                "green": (imagens.INIMIGO_VERDE, imagens.GREEN_LASER),
-                "blue": (imagens.INIMIGO_AZUL, imagens.BLUE_LASER)
+                "red": (_load_imagens.INIMIGO_VERMELHO, _load_imagens.RED_LASER),
+                "green": (_load_imagens.INIMIGO_VERDE, _load_imagens.GREEN_LASER),
+                "blue": (_load_imagens.INIMIGO_AZUL, _load_imagens.BLUE_LASER)
             }
 
             self.player_img, self.player_laser = ENEMY_COLOR[color]

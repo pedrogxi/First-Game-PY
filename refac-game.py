@@ -1,6 +1,5 @@
-from email.mime import image
 import pygame
-from assets.img import imagens
+from assets.img import _load_imagens as img
 
 
 class Game:
@@ -18,7 +17,7 @@ class Game:
         pygame.display.set_caption("Space Shoot")
 
         self.bg_speed = 5
-        self.bg = Background(self.window, imagens.STARS, self.bg_speed)
+        self.bg = Background(self.window, img.STARS, self.bg_speed)
 
 
     def game_loop(self):
@@ -30,7 +29,7 @@ class Game:
             self.check_events()
 
     def render_window(self):
-        self.window.blit(imagens.BACKGROUND, (0,0))
+        self.window.blit(img.BACKGROUND, (0,0))
 
         self.bg.update()
         self.bg.render()
@@ -57,8 +56,10 @@ class Background():
         self.moving_speed = move_speed
 
     def update(self):
+        # faz com que a imagem se mova da direita para esquerda
         self.x -= self.moving_speed
-
+        
+        # faz com que o x da imagem resete se ela tiver chegado ao fim
         if self.x <= - self.rect_bg_image_width:
             self.x = self.rect_bg_image_width
         
