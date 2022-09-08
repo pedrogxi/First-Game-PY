@@ -65,6 +65,30 @@ class Background():
     def render(self):
         self.window.blit(self.image, (self.x, self.y))
 
+class Spaceship():
+    def __init__(self, display, x:float , y: float, life: int = 100) -> None:
+        self.display = display
+        self.pos = self.x, self.y = x, y
+        self.life = life
+        
+        self.ship_img = None
+    
+    def render(self):
+        self.display.blit(self.ship_img, self.pos)
 
+    def get_width(self):
+        '''Retorna a largura da sprit utilizada na nave'''
+        self.ship_img.get_width()
+    
+    def get_height(self):
+        '''Retorna a altura da sprit utilizada na nave'''
+        self.ship_img.get_height()
+
+class Player(Spaceship):
+    def __init__(self, display, x: float, y: float, life: int = 100) -> None:
+        super().__init__(display, x, y, life)
+
+        self.ship_img = img.YELLOW_SPACE_SHIP
+        self.mask = pygame.mask.from_surface(self.ship_img)
 game = Game()
 game.game_loop()
