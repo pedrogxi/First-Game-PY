@@ -19,7 +19,6 @@ class Game:
         self.bg_speed = 5
         self.bg = Background(self.window, img.STARS, self.bg_speed)
 
-
     def game_loop(self):
         while self.runing:
             self.clock.tick(self.FPS)
